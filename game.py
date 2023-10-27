@@ -1,5 +1,6 @@
 import pygame
 import random
+from datetime import datetime
 
 # Pygame initialization
 pygame.init()
@@ -9,7 +10,7 @@ WIDTH, HEIGHT = 800, 600
 PLAYER_ACC = 0.9
 FRICTION = -0.12
 FPS = 60
-WALL_SPEED = 10
+WALL_SPEED = 5
 
 # Colors
 WHITE = (255, 255, 255)
@@ -74,7 +75,13 @@ def game_loop():
 
     running = True
     last_wall_y = 0
+    start_time = datetime.now()
     while running:
+        current_time = datetime.now()
+        elapsed_time = (current_time - start_time).total_seconds()
+        global WALL_SPEED
+        WALL_SPEED = 5 + elapsed_time/5
+
         clock.tick(FPS)
 
         if len(walls) < 5:
@@ -83,7 +90,7 @@ def game_loop():
             random_x = random.randint(0, WIDTH - WALL_WIDTH)
             
             # Make sure there's a gap between this wall and the last
-            gap = 100
+            gap = 70
             random_y = last_wall_y - WALL_HEIGHT - gap
             last_wall_y = random_y
             
