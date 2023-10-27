@@ -9,7 +9,7 @@ WIDTH, HEIGHT = 800, 600
 PLAYER_ACC = 0.9
 FRICTION = -0.12
 FPS = 60
-WALL_SPEED = 5
+WALL_SPEED = 10
 
 # Colors
 WHITE = (255, 255, 255)
@@ -45,13 +45,15 @@ class Player(pygame.sprite.Sprite):
 
 # Wall class
 class Wall(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((random.randint(50, 150), 30))
+    def __init__(self, x, y, w, h, existing_walls=None):
+        super().__init__()
+        self.image = pygame.Surface((w, h))
         self.image.fill(RED)
-        self.rect = self.image.get_rect()
-        self.rect.x = random.randint(0, WIDTH - self.rect.width)
-        self.rect.y = 0 - self.rect.height
+        self.rect = self.image.get_rect(topleft=(x, y))
+
+        if existing_walls:
+            while pygame.sprite.spritecollideany(self, existing_walls, collided=None):
+                self.rect.y = random.randint(-100, -40)
 
     def update(self):
         self.rect.y += WALL_SPEED
@@ -61,7 +63,7 @@ class Wall(pygame.sprite.Sprite):
 # Game loop
 def game_loop():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Flight Simulator")
+    pygame.display.set_caption("Dodge the Wall - Flight Simulator")
     clock = pygame.time.Clock()
 
     all_sprites = pygame.sprite.Group()
@@ -71,11 +73,21 @@ def game_loop():
     all_sprites.add(player)
 
     running = True
+    last_wall_y = 0
     while running:
         clock.tick(FPS)
 
-        if random.random() > 0.95:
-            wall = Wall()
+        if len(walls) < 5:
+            WALL_WIDTH = 80
+            WALL_HEIGHT = random.randint(20, 40)
+            random_x = random.randint(0, WIDTH - WALL_WIDTH)
+            
+            # Make sure there's a gap between this wall and the last
+            gap = 100
+            random_y = last_wall_y - WALL_HEIGHT - gap
+            last_wall_y = random_y
+            
+            wall = Wall(random_x, random_y, WALL_WIDTH, WALL_HEIGHT, walls)
             all_sprites.add(wall)
             walls.add(wall)
 
