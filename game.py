@@ -46,6 +46,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = (x, y)              
         self.vel_x = 0  # Horizontal velocity
         self.vel_y = 0  # Vertical velocity
+        self.health = 2  # Initialize health to 2
 
     def update(self, keys):
         # Horizontal movement (left/right)
@@ -186,19 +187,30 @@ def game_loop():
         walls.update()
 
         # Check for collisions between player and walls
-        hits = pygame.sprite.spritecollide(player, walls, False)
+        hits = pygame.sprite.spritecollide(player, walls, True)
         if hits:
-            running = False
+            player.health -= 1
+            if player.health <= 0:
+                running = False
 
         # Draw all sprites on screen and update the display
         screen.fill(BACKGROUND_COLOR)
         all_sprites.draw(screen)
+        
+        # Display Coins
         font = pygame.font.SysFont(None, 36)  # Default font, size 36
         text_surface = font.render(f"Coins: {COIN_COUNTER}", True, WHITE)
         screen.blit(text_surface, (10, 10))  # Draw at top-left
         
+        # Display Survival Time
         text_surface = font.render(f"Survival Time: {rounded_time}s", True, WHITE)
         screen.blit(text_surface, (10, 35))  # Draw at top-left
+        
+        # Display Health
+        font = pygame.font.Font(None, 36)
+        health_text = font.render("Health: " + str(player.health), True, WHITE)
+        screen.blit(health_text, (WIDTH - 150, 10))
+        
         pygame.display.flip()
 
     pygame.quit()  # End the game
