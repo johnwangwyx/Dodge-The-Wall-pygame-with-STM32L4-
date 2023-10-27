@@ -10,7 +10,7 @@ WIDTH, HEIGHT = 800, 600  # Screen dimensions
 PLAYER_ACC = 0.9         # Acceleration for player movement
 FRICTION = -0.12         # Friction affecting player movement (deceleration)
 FPS = 60                 # Frames per second (game refresh rate)
-WALL_SPEED = 5           # Speed at which walls move down the screen
+WALL_SPEED = 15           # Speed at which walls move down the screen
 
 # Color definitions
 WHITE = (255, 255, 255)
@@ -25,12 +25,27 @@ COIN_COUNTER = 0
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((30, 30))  # Create a rectangular player surface
-        self.image.fill(GREEN)                 # Fill the player with green color
-        self.rect = self.image.get_rect()      # Get the rectangular area covering the player
-        self.rect.center = (x, y)              # Position the player at given (x, y)
+        
+        # Triangle dimensions
+        triangle_width = 30
+        triangle_height = 30
+
+        # Create a transparent surface for the triangle
+        self.image = pygame.Surface((triangle_width, triangle_height), pygame.SRCALPHA)
+        
+        # Draw a triangle (airplane) on the surface
+        pygame.draw.polygon(self.image, GREEN, [
+            (triangle_width // 2, 0),  # Top point of the triangle
+            (0, triangle_height),      # Bottom-left point of the triangle
+            (triangle_width, triangle_height)  # Bottom-right point of the triangle
+        ])
+        
+        # Get the rectangular area covering the player
+        self.rect = self.image.get_rect()
+        # Position the player at given (x, y)
+        self.rect.center = (x, y)              
         self.vel_x = 0  # Horizontal velocity
-        self.vel_y = 0  # Vertical velocity <-- Added
+        self.vel_y = 0  # Vertical velocity
 
     def update(self, keys):
         # Horizontal movement (left/right)
@@ -39,7 +54,7 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_RIGHT]:
             self.vel_x += PLAYER_ACC
 
-        # Vertical movement (up/down) <-- Added
+        # Vertical movement (up/down)
         if keys[pygame.K_UP]:
             self.vel_y -= PLAYER_ACC
         if keys[pygame.K_DOWN]:
@@ -50,9 +65,9 @@ class Player(pygame.sprite.Sprite):
         # Update player's horizontal position
         self.rect.x += self.vel_x
 
-        # Apply friction to vertical velocity <-- Added
+        # Apply friction to vertical velocity
         self.vel_y += self.vel_y * FRICTION
-        # Update player's vertical position <-- Added
+        # Update player's vertical position
         self.rect.y += self.vel_y
 
         # Ensure player doesn't move outside the screen horizontally
@@ -61,17 +76,18 @@ class Player(pygame.sprite.Sprite):
         if self.rect.left < 0:
             self.rect.left = 0
 
-        # Ensure player doesn't move outside the screen vertically <-- Added
+        # Ensure player doesn't move outside the screen vertically
         if self.rect.bottom > HEIGHT:
             self.rect.bottom = HEIGHT
         if self.rect.top < 0:
             self.rect.top = 0
 
+
 class Coin(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((20, 20))
-        self.image.fill(YELLOW)
+        self.image = pygame.Surface((20, 20), pygame.SRCALPHA)
+        pygame.draw.circle(self.image, YELLOW, (10, 10), 10)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -136,8 +152,10 @@ def game_loop():
         # Calculate elapsed time to adjust wall speed dynamically
         current_time = datetime.now()
         elapsed_time = (current_time - start_time).total_seconds()
+        rounded_time = round(elapsed_time, 2)
         global WALL_SPEED
-        WALL_SPEED = 5 + elapsed_time/5
+        WALL_SPEED = 8.0 + elapsed_time/10
+        WALL_SPEED = min(WALL_SPEED, 15.0)
 
         clock.tick(FPS)  # Cap the game loop to the defined FPS
 
@@ -178,6 +196,9 @@ def game_loop():
         font = pygame.font.SysFont(None, 36)  # Default font, size 36
         text_surface = font.render(f"Coins: {COIN_COUNTER}", True, WHITE)
         screen.blit(text_surface, (10, 10))  # Draw at top-left
+        
+        text_surface = font.render(f"Survival Time: {rounded_time}s", True, WHITE)
+        screen.blit(text_surface, (10, 35))  # Draw at top-left
         pygame.display.flip()
 
     pygame.quit()  # End the game
