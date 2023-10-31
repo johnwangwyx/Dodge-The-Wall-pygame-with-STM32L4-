@@ -47,19 +47,31 @@ class Player(pygame.sprite.Sprite):
         self.vel_x = 0  # Horizontal velocity
         self.vel_y = 0  # Vertical velocity
         self.health = 2  # Initialize health to 2
+        self.angle = 0  # Angle for rotation
+        self.original_image = self.image.copy()
 
     def update(self, keys):
         # Horizontal movement (left/right)
         if keys[pygame.K_LEFT]:
             self.vel_x -= PLAYER_ACC
-        if keys[pygame.K_RIGHT]:
+            self.angle = 15  # Tilt to the left
+        elif keys[pygame.K_RIGHT]:  # Use 'elif' so that only one condition is met at a time
             self.vel_x += PLAYER_ACC
+            self.angle = -15  # Tilt to the right
+        else:
+            self.angle = 0  # No tilt if not moving horizontally
 
         # Vertical movement (up/down)
         if keys[pygame.K_UP]:
             self.vel_y -= PLAYER_ACC
-        if keys[pygame.K_DOWN]:
+        elif keys[pygame.K_DOWN]:
             self.vel_y += PLAYER_ACC
+
+        # Rotate the triangle based on the current angle
+        self.image = pygame.transform.rotate(self.original_image, self.angle)
+
+        # Update position and bounding box
+        self.rect = self.image.get_rect(center=self.rect.center)
 
         # Apply friction to horizontal velocity
         self.vel_x += self.vel_x * FRICTION
