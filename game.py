@@ -1,14 +1,18 @@
 import pygame
 import random
 from datetime import datetime
+import serial
+
+# Setup serial port
+ser = serial.Serial('/dev/cu.usbmodem1103', 115200, timeout=0)
 
 # Initialize the pygame module
 pygame.init()
 
 # Game parameters
 WIDTH, HEIGHT = 800, 600  # Screen dimensions
-PLAYER_ACC = 0.9         # Acceleration for player movement
-FRICTION = -0.12         # Friction affecting player movement (deceleration)
+PLAYER_ACC = 70         # Acceleration for player movement
+FRICTION = -0.3         # Friction affecting player movement (deceleration)
 FPS = 60                 # Frames per second (game refresh rate)
 WALL_SPEED = 15           # Speed at which walls move down the screen
 
@@ -50,22 +54,17 @@ class Player(pygame.sprite.Sprite):
         self.angle = 0  # Angle for rotation
         self.original_image = self.image.copy()
 
-    def update(self, keys):
-        # Horizontal movement (left/right)
-        if keys[pygame.K_LEFT]:
-            self.vel_x -= PLAYER_ACC
-            self.angle = 15  # Tilt to the left
-        elif keys[pygame.K_RIGHT]:  # Use 'elif' so that only one condition is met at a time
-            self.vel_x += PLAYER_ACC
-            self.angle = -15  # Tilt to the right
-        else:
-            self.angle = 0  # No tilt if not moving horizontally
+    def update_with_data(self, roll, pitch):
+        pitch = pitch*1.5
+        # Clamp the roll and pitch values to the range of -45 to 45 degrees
+        roll = max(-45, min(45, roll))
+        pitch = max(-45, min(45, pitch))
+        # Map the roll and pitch to the player's velocity
+        self.vel_x = roll * PLAYER_ACC / 90  # Assuming max roll of 90 maps to max PLAYER_ACC
+        self.vel_y = pitch * PLAYER_ACC / 90  # Assuming max pitch of 90 maps to max PLAYER_ACC
 
-        # Vertical movement (up/down)
-        if keys[pygame.K_UP]:
-            self.vel_y -= PLAYER_ACC
-        elif keys[pygame.K_DOWN]:
-            self.vel_y += PLAYER_ACC
+        # Update the angle based on roll (left/right tilt)
+        self.angle = -roll  # Negative to ensure correct direction of rotation
 
         # Rotate the triangle based on the current angle
         self.image = pygame.transform.rotate(self.original_image, self.angle)
@@ -193,9 +192,16 @@ def game_loop():
             if event.type == pygame.QUIT:
                 running = False
 
-        # Update player and wall positions
-        keys = pygame.key.get_pressed()
-        player.update(keys)
+        # Read data from UART
+        line = ser.readline().decode('utf-8')
+        if "roll and pitch," in line:
+            _, roll_str, pitch_str = line.split(',')
+            try:
+                roll = int(roll_str)
+                pitch = int(pitch_str)
+                player.update_with_data(roll, -pitch)
+            except ValueError:
+                pass
         walls.update()
 
         # Check for collisions between player and walls
@@ -211,7 +217,7 @@ def game_loop():
         
         # Display Coins
         font = pygame.font.SysFont(None, 36)  # Default font, size 36
-        text_surface = font.render(f"Coins: {COIN_COUNTER}", True, WHITE)
+        text_surface = font.render(f"Coins: {COIN_COUNTER}", True, YELLOW)
         screen.blit(text_surface, (10, 10))  # Draw at top-left
         
         # Display Survival Time
@@ -220,9 +226,13 @@ def game_loop():
         
         # Display Health
         font = pygame.font.Font(None, 36)
-        health_text = font.render("Health: " + str(player.health), True, WHITE)
+        health_text = font.render("Health: " + str(player.health), True, RED)
         screen.blit(health_text, (WIDTH - 150, 10))
-        
+
+        # Display Current WALL_SPEED
+        speed_text = font.render(f"Wall Speed: {round(WALL_SPEED, 2)}", True, WHITE)  # Round WALL_SPEED for display
+        screen.blit(speed_text, (10, 65))
+
         pygame.display.flip()
 
     pygame.quit()  # End the game
