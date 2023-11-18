@@ -24,35 +24,28 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 BACKGROUND_COLOR = (0, 0, 0)
 
+PLAYER_HEALTH = 2
+
 COIN_COUNTER = 0
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        
-        # Triangle dimensions
-        triangle_width = 30
-        triangle_height = 30
 
-        # Create a transparent surface for the triangle
-        self.image = pygame.Surface((triangle_width, triangle_height), pygame.SRCALPHA)
-        
-        # Draw a triangle (airplane) on the surface
-        pygame.draw.polygon(self.image, GREEN, [
-            (triangle_width // 2, 0),          # Top point of the triangle
-            (0, triangle_height),              # Bottom-left point of the triangle
-            (triangle_width, triangle_height)  # Bottom-right point of the triangle
-        ])
-        
+        # Load the airplane image
+        self.original_image = pygame.image.load('Assets/Plane2.png').convert_alpha()
+        # Scale the image
+        self.original_image = pygame.transform.scale(self.original_image, (50, 50))
+
         # Get the rectangular area covering the player
-        self.rect = self.image.get_rect()
+        self.rect = self.original_image.get_rect()
         # Position the player at given (x, y)
-        self.rect.center = (x, y)              
+        self.rect.center = (x, y)
         self.vel_x = 0   # Horizontal velocity
         self.vel_y = 0   # Vertical velocity
-        self.health = 2  # Initialize health to 2
+        self.health = PLAYER_HEALTH  # Initialize health to 2
         self.angle = 0   # Angle for rotation
-        self.original_image = self.image.copy()
+        self.image = self.original_image.copy()
 
     def update_with_data(self, roll, pitch):
         pitch = pitch*1.5
@@ -98,8 +91,12 @@ class Player(pygame.sprite.Sprite):
 class Coin(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((20, 20), pygame.SRCALPHA)
-        pygame.draw.circle(self.image, YELLOW, (10, 10), 10)
+
+        # Load the coin image
+        self.image = pygame.image.load('Assets/gold_coin.png').convert_alpha()
+        # Scale the image
+        self.image = pygame.transform.scale(self.image, (30, 30))
+
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -159,6 +156,13 @@ def game_loop():
     start_time = datetime.now()
     
     coins = pygame.sprite.Group()
+
+    # Load heart images
+    full_heart = pygame.image.load('Assets/full_heart.png').convert_alpha()
+    empty_heart = pygame.image.load('Assets/empty_heart.png').convert_alpha()
+
+    full_heart = pygame.transform.scale(full_heart, (30, 30))
+    empty_heart = pygame.transform.scale(empty_heart, (30, 30))
     
     while running:
         # Calculate elapsed time to adjust wall speed dynamically
@@ -225,9 +229,16 @@ def game_loop():
         screen.blit(text_surface, (10, 35))  # Draw at top-left
         
         # Display Health
-        font = pygame.font.Font(None, 36)
-        health_text = font.render("Health: " + str(player.health), True, RED)
-        screen.blit(health_text, (WIDTH - 150, 10))
+        # font = pygame.font.Font(None, 36)
+        # health_text = font.render("Health: " + str(player.health), True, RED)
+        # screen.blit(health_text, (WIDTH - 150, 10))
+
+        # Display Health as Hearts
+        for i in range(player.health):  # Assuming a maximum of 2 health
+            if i < player.health:
+                screen.blit(full_heart, (WIDTH - (player.health*40) + (i * 35), 10))
+            else:
+                screen.blit(empty_heart, (WIDTH - (player.health*40) + (i * 35), 10))
 
         # Display Current WALL_SPEED
         speed_text = font.render(f"Wall Speed: {round(WALL_SPEED, 2)}", True, WHITE)  # Round WALL_SPEED for display
