@@ -11,9 +11,9 @@ pygame.init()
 
 # Game parameters
 WIDTH, HEIGHT = 800, 600  # Screen dimensions
-PLAYER_ACC = 70         # Acceleration for player movement
-FRICTION = -0.3         # Friction affecting player movement (deceleration)
-FPS = 60                 # Frames per second (game refresh rate)
+PLAYER_ACC = 70           # Acceleration for player movement
+FRICTION = -0.3           # Friction affecting player movement (deceleration)
+FPS = 60                  # Frames per second (game refresh rate)
 WALL_SPEED = 15           # Speed at which walls move down the screen
 
 # Color definitions
@@ -39,8 +39,8 @@ class Player(pygame.sprite.Sprite):
         
         # Draw a triangle (airplane) on the surface
         pygame.draw.polygon(self.image, GREEN, [
-            (triangle_width // 2, 0),  # Top point of the triangle
-            (0, triangle_height),      # Bottom-left point of the triangle
+            (triangle_width // 2, 0),          # Top point of the triangle
+            (0, triangle_height),              # Bottom-left point of the triangle
             (triangle_width, triangle_height)  # Bottom-right point of the triangle
         ])
         
@@ -48,10 +48,10 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         # Position the player at given (x, y)
         self.rect.center = (x, y)              
-        self.vel_x = 0  # Horizontal velocity
-        self.vel_y = 0  # Vertical velocity
+        self.vel_x = 0   # Horizontal velocity
+        self.vel_y = 0   # Vertical velocity
         self.health = 2  # Initialize health to 2
-        self.angle = 0  # Angle for rotation
+        self.angle = 0   # Angle for rotation
         self.original_image = self.image.copy()
 
     def update_with_data(self, roll, pitch):
@@ -111,8 +111,8 @@ class Coin(pygame.sprite.Sprite):
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, w, h, existing_walls=None):
         super().__init__()
-        self.image = pygame.Surface((w, h))  # Create wall surface with given width and height
-        self.image.fill(RED)                 # Fill the wall with red color
+        self.image = pygame.Surface((w, h))              # Create wall surface with given width and height
+        self.image.fill(RED)                             # Fill the wall with red color
         self.rect = self.image.get_rect(topleft=(x, y))  # Position the wall at the given (x, y)
 
         # Ensure new walls don't overlap with existing walls
@@ -128,7 +128,7 @@ class Wall(pygame.sprite.Sprite):
             self.kill()
 
 def responwn_and_collect_coin(all_sprites, coins, player, chance_per_frame=0.005):
-    if random.random() < chance_per_frame:  # 0.2% chance every frame to spawn a coin
+    if random.random() < chance_per_frame:                 # 0.2% chance every frame to spawn a coin
         coin_x = random.randint(0, WIDTH - 20)
         coin_y = random.randint(HEIGHT // 2, HEIGHT - 20)  # only on the bottom half
         coin = Coin(coin_x, coin_y)
@@ -148,14 +148,14 @@ def game_loop():
     pygame.display.set_caption("Dodge the Wall - Flight Simulator")
     clock = pygame.time.Clock()
 
-    all_sprites = pygame.sprite.Group()  # Group containing all sprites
-    walls = pygame.sprite.Group()        # Group containing all wall sprites
+    all_sprites = pygame.sprite.Group()      # Group containing all sprites
+    walls = pygame.sprite.Group()            # Group containing all wall sprites
 
     player = Player(WIDTH / 2, HEIGHT - 40)  # Instantiate player
-    all_sprites.add(player)                 # Add player to all_sprites group
+    all_sprites.add(player)                  # Add player to all_sprites group
 
     running = True
-    last_wall_y = 0                         # Track y-position of last generated wall
+    last_wall_y = 0                          # Track y-position of last generated wall
     start_time = datetime.now()
     
     coins = pygame.sprite.Group()
@@ -166,14 +166,14 @@ def game_loop():
         elapsed_time = (current_time - start_time).total_seconds()
         rounded_time = round(elapsed_time, 2)
         global WALL_SPEED
-        WALL_SPEED = 8.0 + elapsed_time/10
-        WALL_SPEED = min(WALL_SPEED, 15.0)
+        WALL_SPEED = 10.0 + elapsed_time/10
+        WALL_SPEED = min(WALL_SPEED, 17.0)
 
         clock.tick(FPS)  # Cap the game loop to the defined FPS
 
         responwn_and_collect_coin(all_sprites, coins, player)
 
-        # Generate new walls if there are fewer than 5 on screen
+        # Generate new walls if thebre are fewer than 5 on screen
         if len(walls) < 5:
             WALL_WIDTH = 80
             WALL_HEIGHT = random.randint(20, 40)
