@@ -104,6 +104,26 @@ class Coin(pygame.sprite.Sprite):
     def update(self):
         pass
 
+class ScrollingBackground:
+    def __init__(self, img_path, speed):
+        self.image = pygame.image.load(img_path).convert()  # Load the landscape image
+        self.speed = speed
+        self.y1 = 0
+        self.y2 = -HEIGHT  # Set the second image just above the screen
+
+    def update(self):
+        self.y1 += self.speed
+        self.y2 += self.speed
+        # Reset images when they move out of the screen
+        if self.y1 >= HEIGHT:
+            self.y1 = -HEIGHT
+        if self.y2 >= HEIGHT:
+            self.y2 = -HEIGHT
+
+    def draw(self, screen):
+        screen.blit(self.image, (0, self.y1))
+        screen.blit(self.image, (0, self.y2))
+
 # Define Wall class
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, w, h, existing_walls=None):
@@ -163,6 +183,8 @@ def game_loop():
 
     full_heart = pygame.transform.scale(full_heart, (30, 30))
     empty_heart = pygame.transform.scale(empty_heart, (30, 30))
+
+    background = ScrollingBackground('Assets/background.png', 0.1)
     
     while running:
         # Calculate elapsed time to adjust wall speed dynamically
@@ -171,7 +193,7 @@ def game_loop():
         rounded_time = round(elapsed_time, 2)
         global WALL_SPEED
         WALL_SPEED = 10.0 + elapsed_time/10
-        WALL_SPEED = min(WALL_SPEED, 17.0)
+        WALL_SPEED = min(WALL_SPEED, 20.0)
 
         clock.tick(FPS)  # Cap the game loop to the defined FPS
 
@@ -179,7 +201,7 @@ def game_loop():
 
         # Generate new walls if thebre are fewer than 5 on screen
         if len(walls) < 5:
-            WALL_WIDTH = 80
+            WALL_WIDTH = random.randint(70, 120)
             WALL_HEIGHT = random.randint(20, 40)
             random_x = random.randint(0, WIDTH - WALL_WIDTH)
             # Ensure there's a gap between consecutive walls
@@ -216,8 +238,11 @@ def game_loop():
                 running = False
 
         # Draw all sprites on screen and update the display
-        screen.fill(BACKGROUND_COLOR)
+        # screen.fill(BACKGROUND_COLOR)
+        background.update()  # Update the background's position
+        background.draw(screen)  # Draw the background
         all_sprites.draw(screen)
+        
         
         # Display Coins
         font = pygame.font.SysFont(None, 36)  # Default font, size 36
