@@ -2,7 +2,7 @@ import wave
 import struct
 
 # Path to the WAV file
-wav_file = "explosion.wav"
+wav_file = "Sound/BGM.wav"
 
 # Function to convert WAV file to C array
 def wav_to_c_array(wav_file, c_array_name):
