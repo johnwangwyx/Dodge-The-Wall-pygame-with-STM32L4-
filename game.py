@@ -3,16 +3,13 @@ import random
 from datetime import datetime
 import serial
 
-# Setup serial port
-ser = serial.Serial('/dev/cu.usbmodem1103', 115200, timeout=0)
-
 # Initialize the pygame module
 pygame.init()
 
 # Game parameters
 WIDTH, HEIGHT = 800, 600  # Screen dimensions
-PLAYER_ACC = 70           # Acceleration for player movement
-FRICTION = -0.3           # Friction affecting player movement (deceleration)
+PLAYER_ACC = 60           # Acceleration for player movement
+FRICTION = -0.5           # Friction affecting player movement (deceleration)
 FPS = 60                  # Frames per second (game refresh rate)
 WALL_SPEED = 15           # Speed at which walls move down the screen
 
@@ -24,7 +21,7 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 BACKGROUND_COLOR = (0, 0, 0)
 
-PLAYER_HEALTH = 2
+PLAYER_HEALTH = 3
 
 COIN_COUNTER = 0
 
@@ -124,6 +121,26 @@ class ScrollingBackground:
         screen.blit(self.image, (0, self.y1))
         screen.blit(self.image, (0, self.y2))
 
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, center, frames):
+        super().__init__()
+        self.frames = frames
+        self.image = self.frames[0]
+        self.rect = self.image.get_rect(center=center)
+        self.frame_index = 0
+        self.last_update = pygame.time.get_ticks()
+        self.frame_rate = 50  # Milliseconds between frames
+
+    def update(self):
+        now = pygame.time.get_ticks()
+        if now - self.last_update > self.frame_rate:
+            self.last_update = now
+            self.frame_index += 1
+            if self.frame_index == len(self.frames):
+                self.kill()  # Remove the sprite after the animation is done
+            else:
+                self.image = self.frames[self.frame_index]
+
 # Define Wall class
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, w, h, existing_walls=None):
@@ -157,6 +174,33 @@ def responwn_and_collect_coin(all_sprites, coins, player, chance_per_frame=0.005
         global COIN_COUNTER
         COIN_COUNTER += 1
 
+def draw_text(surf, text, size, x, y):
+    font = pygame.font.Font(None, size)
+    text_surface = font.render(text, True, WHITE)
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (x, y)
+    surf.blit(text_surface, text_rect)
+
+def show_start_screen(screen):
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False  # Exit the game
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    running = False  # Start the game
+
+        screen.fill(BACKGROUND_COLOR)
+        draw_text(screen, "Dodge the Wall - Flight Simulator", 64, WIDTH / 2, HEIGHT / 4)
+        #draw_text(screen, "Press Space to Start", 22, WIDTH / 2, HEIGHT / 2)
+
+        pygame.display.flip()
+        pygame.time.wait(100)
+
+    return True
+
 
 # Main game loop
 def game_loop():
@@ -184,92 +228,103 @@ def game_loop():
     full_heart = pygame.transform.scale(full_heart, (30, 30))
     empty_heart = pygame.transform.scale(empty_heart, (30, 30))
 
-    background = ScrollingBackground('Assets/background.png', 0.1)
-    
-    while running:
-        # Calculate elapsed time to adjust wall speed dynamically
-        current_time = datetime.now()
-        elapsed_time = (current_time - start_time).total_seconds()
-        rounded_time = round(elapsed_time, 2)
-        global WALL_SPEED
-        WALL_SPEED = 10.0 + elapsed_time/10
-        WALL_SPEED = min(WALL_SPEED, 20.0)
+    background = ScrollingBackground('Assets/background.png', 0.15)
 
-        clock.tick(FPS)  # Cap the game loop to the defined FPS
+    explosion_frames = []
+    for i in range(1, 26):
+        filename = f'Assets/Explosion/{str(i).zfill(4)}.png'
+        img = pygame.image.load(filename).convert_alpha()
+        scaled_img = pygame.transform.scale(img, (120, 120))
+        explosion_frames.append(scaled_img)    
+    explosion_sprites = pygame.sprite.Group()
 
-        responwn_and_collect_coin(all_sprites, coins, player)
+    if show_start_screen(screen):
+        pygame.event.clear()
+        # Setup serial port
+        ser = serial.Serial('/dev/cu.usbmodem1103', 115200, timeout=0)
+        while running:
+            # Calculate elapsed time to adjust wall speed dynamically
+            current_time = datetime.now()
+            elapsed_time = (current_time - start_time).total_seconds()
+            rounded_time = round(elapsed_time, 2)
+            global WALL_SPEED
+            WALL_SPEED = 10.0 + elapsed_time/10
+            WALL_SPEED = min(WALL_SPEED, 20.0)
 
-        # Generate new walls if thebre are fewer than 5 on screen
-        if len(walls) < 5:
-            WALL_WIDTH = random.randint(70, 120)
-            WALL_HEIGHT = random.randint(20, 40)
-            random_x = random.randint(0, WIDTH - WALL_WIDTH)
-            # Ensure there's a gap between consecutive walls
-            gap = 70
-            random_y = last_wall_y - WALL_HEIGHT - gap
-            last_wall_y = random_y
+            clock.tick(FPS)  # Cap the game loop to the defined FPS
 
-            wall = Wall(random_x, random_y, WALL_WIDTH, WALL_HEIGHT, walls)
-            all_sprites.add(wall)
-            walls.add(wall)
+            responwn_and_collect_coin(all_sprites, coins, player)
 
-        # Check for user events like closing the game window
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+            # Generate new walls if thebre are fewer than 5 on screen
+            if len(walls) < 5:
+                WALL_WIDTH = random.randint(70, 120)
+                WALL_HEIGHT = random.randint(20, 40)
+                random_x = random.randint(0, WIDTH - WALL_WIDTH)
+                # Ensure there's a gap between consecutive walls
+                gap = 70
+                random_y = last_wall_y - WALL_HEIGHT - gap
+                last_wall_y = random_y
 
-        # Read data from UART
-        line = ser.readline().decode('utf-8')
-        if "roll and pitch," in line:
-            _, roll_str, pitch_str = line.split(',')
-            try:
-                roll = int(roll_str)
-                pitch = int(pitch_str)
-                player.update_with_data(roll, -pitch)
-            except ValueError:
-                pass
-        walls.update()
+                wall = Wall(random_x, random_y, WALL_WIDTH, WALL_HEIGHT, walls)
+                all_sprites.add(wall)
+                walls.add(wall)
 
-        # Check for collisions between player and walls
-        hits = pygame.sprite.spritecollide(player, walls, True)
-        if hits:
-            player.health -= 1
-            if player.health <= 0:
-                running = False
+            # Check for user events like closing the game window
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
 
-        # Draw all sprites on screen and update the display
-        # screen.fill(BACKGROUND_COLOR)
-        background.update()  # Update the background's position
-        background.draw(screen)  # Draw the background
-        all_sprites.draw(screen)
-        
-        
-        # Display Coins
-        font = pygame.font.SysFont(None, 36)  # Default font, size 36
-        text_surface = font.render(f"Coins: {COIN_COUNTER}", True, YELLOW)
-        screen.blit(text_surface, (10, 10))  # Draw at top-left
-        
-        # Display Survival Time
-        text_surface = font.render(f"Survival Time: {rounded_time}s", True, WHITE)
-        screen.blit(text_surface, (10, 35))  # Draw at top-left
-        
-        # Display Health
-        # font = pygame.font.Font(None, 36)
-        # health_text = font.render("Health: " + str(player.health), True, RED)
-        # screen.blit(health_text, (WIDTH - 150, 10))
+            # Read data from UART
+            line = ser.readline().decode('utf-8')
+            if "roll and pitch," in line:
+                _, roll_str, pitch_str = line.split(',')
+                try:
+                    roll = int(roll_str)
+                    pitch = int(pitch_str)
+                    player.update_with_data(roll, -pitch)
+                except ValueError:
+                    pass
+            walls.update()
 
-        # Display Health as Hearts
-        for i in range(player.health):  # Assuming a maximum of 2 health
-            if i < player.health:
-                screen.blit(full_heart, (WIDTH - (player.health*40) + (i * 35), 10))
-            else:
-                screen.blit(empty_heart, (WIDTH - (player.health*40) + (i * 35), 10))
+            # Check for collisions between player and walls
+            hits = pygame.sprite.spritecollide(player, walls, True)
+            if hits:
+                expl = Explosion(hits[0].rect.center, explosion_frames)
+                explosion_sprites.add(expl)
+                all_sprites.add(expl)
+                player.health -= 1
+                if player.health <= 0:
+                    running = False
 
-        # Display Current WALL_SPEED
-        speed_text = font.render(f"Wall Speed: {round(WALL_SPEED, 2)}", True, WHITE)  # Round WALL_SPEED for display
-        screen.blit(speed_text, (10, 65))
+            # Draw all sprites on screen and update the display
+            # screen.fill(BACKGROUND_COLOR)
+            background.update()  # Update the background's position
+            background.draw(screen)  # Draw the background
+            explosion_sprites.update()
+            all_sprites.draw(screen)
+            
+            
+            # Display Coins
+            font = pygame.font.SysFont(None, 36)  # Default font, size 36
+            text_surface = font.render(f"Coins: {COIN_COUNTER}", True, YELLOW)
+            screen.blit(text_surface, (10, 10))  # Draw at top-left
+            
+            # Display Survival Time
+            text_surface = font.render(f"Survival Time: {rounded_time}s", True, WHITE)
+            screen.blit(text_surface, (10, 35))  # Draw at top-left
 
-        pygame.display.flip()
+            # Display Health as Hearts
+            for i in range(player.health):  # Assuming a maximum of 2 health
+                if i < player.health:
+                    screen.blit(full_heart, (WIDTH - (player.health*40) + (i * 35), 10))
+                else:
+                    screen.blit(empty_heart, (WIDTH - (player.health*40) + (i * 35), 10))
+
+            # Display Current WALL_SPEED
+            speed_text = font.render(f"Wall Speed: {round(WALL_SPEED, 2)}", True, WHITE)  # Round WALL_SPEED for display
+            screen.blit(speed_text, (10, 65))
+
+            pygame.display.flip()
 
     pygame.quit()  # End the game
 
