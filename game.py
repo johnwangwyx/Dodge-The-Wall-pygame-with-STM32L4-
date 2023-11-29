@@ -2,6 +2,7 @@ import pygame
 import random
 from datetime import datetime
 import serial
+import time
 
 # Initialize the pygame module
 pygame.init()
@@ -161,7 +162,7 @@ class Wall(pygame.sprite.Sprite):
         if self.rect.top > HEIGHT:
             self.kill()
 
-def responwn_and_collect_coin(all_sprites, coins, player, chance_per_frame=0.005):
+def responwn_and_collect_coin(all_sprites, coins, player, ser, chance_per_frame=0.005):
     if random.random() < chance_per_frame:                 # 0.2% chance every frame to spawn a coin
         coin_x = random.randint(0, WIDTH - 20)
         coin_y = random.randint(HEIGHT // 2, HEIGHT - 20)  # only on the bottom half
@@ -171,6 +172,7 @@ def responwn_and_collect_coin(all_sprites, coins, player, chance_per_frame=0.005
         
     coin_hits = pygame.sprite.spritecollide(player, coins, True)  # The True means the coin will be deleted once collected
     for coin in coin_hits:
+        send_UART_command("coin", ser)
         global COIN_COUNTER
         COIN_COUNTER += 1
 
@@ -201,6 +203,10 @@ def show_start_screen(screen):
 
     return True
 
+def send_UART_command(command, ser):
+    message = f"{command}\n".encode('utf-8')
+    status = ser.write(message)
+    a = status
 
 # Main game loop
 def game_loop():
@@ -242,6 +248,7 @@ def game_loop():
         pygame.event.clear()
         # Setup serial port
         ser = serial.Serial('/dev/cu.usbmodem1103', 115200, timeout=0)
+        send_UART_command("start", ser)
         while running:
             # Calculate elapsed time to adjust wall speed dynamically
             current_time = datetime.now()
@@ -253,7 +260,7 @@ def game_loop():
 
             clock.tick(FPS)  # Cap the game loop to the defined FPS
 
-            responwn_and_collect_coin(all_sprites, coins, player)
+            responwn_and_collect_coin(all_sprites, coins, player, ser)
 
             # Generate new walls if thebre are fewer than 5 on screen
             if len(walls) < 5:
@@ -289,6 +296,7 @@ def game_loop():
             # Check for collisions between player and walls
             hits = pygame.sprite.spritecollide(player, walls, True)
             if hits:
+                send_UART_command("explosion", ser)
                 expl = Explosion(hits[0].rect.center, explosion_frames)
                 explosion_sprites.add(expl)
                 all_sprites.add(expl)
@@ -326,7 +334,10 @@ def game_loop():
 
             pygame.display.flip()
 
+        send_UART_command("stop", ser)
+
     pygame.quit()  # End the game
 
 # Start the game loop
 game_loop()
+
