@@ -3,6 +3,14 @@ import random
 from datetime import datetime
 import serial
 import time
+import logging
+import math
+# Configure logging to display the current time
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s.%(msecs)03d %(levelname)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 # Initialize the pygame module
 pygame.init()
@@ -25,6 +33,10 @@ BACKGROUND_COLOR = (0, 0, 0)
 PLAYER_HEALTH = 3
 
 COIN_COUNTER = 0
+
+# Global variables for leaderboard data
+best_coins = [-1, -1, -1]
+best_times = [-1, -1, -1]
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -163,7 +175,7 @@ class Wall(pygame.sprite.Sprite):
             self.kill()
 
 def responwn_and_collect_coin(all_sprites, coins, player, ser, chance_per_frame=0.005):
-    if random.random() < chance_per_frame:                 # 0.2% chance every frame to spawn a coin
+    if random.random() < chance_per_frame:
         coin_x = random.randint(0, WIDTH - 20)
         coin_y = random.randint(HEIGHT // 2, HEIGHT - 20)  # only on the bottom half
         coin = Coin(coin_x, coin_y)
@@ -183,27 +195,81 @@ def draw_text(surf, text, size, x, y):
     text_rect.midtop = (x, y)
     surf.blit(text_surface, text_rect)
 
-def show_start_screen(screen):
+def log_line(line: str, cur_frame=None):
+    line_cpy = line.strip()
+    if len(line_cpy) > 3:
+        if cur_frame:
+            logging.info(f"Received UART: {line_cpy} at frame #{cur_frame}")
+        else:
+            logging.info(f"Received UART: {line_cpy}")
+
+# Function to update leaderboard data
+def update_leaderboard_data(line):
+    global best_coins, best_times
+    parts = line.split(', ')
+    if parts[0] == " rank":
+        best_coins = [int(parts[1]), int(parts[2]), int(parts[3])]
+        best_times = [int(parts[4]), int(parts[5]), int(parts[6])]
+        return True
+    return False
+
+def show_start_screen(screen, ser):
     running = True
+    received_rank = False
+    color_change_frequency = 20  # Determines how rapidly the color changes
+    color_index = 0
+
     while running:
+        # Check for leaderboard data
+        line = ser.readline().decode('utf-8')
+        screen.fill(BACKGROUND_COLOR)
+        if "rank" in line and not received_rank:
+            log_line(line)
+            received_rank = update_leaderboard_data(line)
+
+        # Generate a color-changing effect
+        color_index += 1
+        if color_index > color_change_frequency:
+            color_index = 0
+        color_r = int((1 + math.sin(color_index * math.pi / color_change_frequency)) * 100)
+        color_g = int((1 + math.sin((color_index + color_change_frequency / 3) * math.pi / color_change_frequency)) * 100)
+        color_b = int((1 + math.sin((color_index + 2 * color_change_frequency / 3) * math.pi / color_change_frequency)) * 100)
+        changing_color = (color_r, color_g, color_b)
+
+        if received_rank:
+            # Display leaderboard
+            draw_text(screen, "Leaderboard - Best Coins", 30, WIDTH / 2, HEIGHT / 2 + 50)
+            for i, score in enumerate(best_coins):
+                draw_text(screen, f"{i+1}. {score}", 24, WIDTH / 2, HEIGHT / 2 + 80 + i * 30)
+            draw_text(screen, "Leaderboard - Best Times", 30, WIDTH / 2, HEIGHT / 2 + 170)
+            for i, time in enumerate(best_times):
+                draw_text(screen, f"{i+1}. {time}s", 24, WIDTH / 2, HEIGHT / 2 + 200 + i * 30)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                return False  # Exit the game
+                return False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    running = False  # Start the game
+                    running = False
 
-        screen.fill(BACKGROUND_COLOR)
-        draw_text(screen, "Dodge the Wall - Flight Simulator", 64, WIDTH / 2, HEIGHT / 4)
-        #draw_text(screen, "Press Space to Start", 22, WIDTH / 2, HEIGHT / 2)
+        draw_text(screen, "Dodge the Wall - Flight Simulator", 64, WIDTH / 2, HEIGHT / 4, changing_color)
+        draw_text(screen, "Press Space to Start", 22, WIDTH / 2, HEIGHT / 2)
 
         pygame.display.flip()
         pygame.time.wait(100)
 
     return True
 
+def draw_text(surf, text, size, x, y, color=WHITE):
+    font = pygame.font.Font(None, size)
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (x, y)
+    surf.blit(text_surface, text_rect)
+
 def send_UART_command(command, ser):
+    logging.info(f"Sending UART: {command}")
     message = f"{command}\n".encode('utf-8')
     status = ser.write(message)
     a = status
@@ -223,7 +289,6 @@ def game_loop():
 
     running = True
     last_wall_y = 0                          # Track y-position of last generated wall
-    start_time = datetime.now()
     
     coins = pygame.sprite.Group()
 
@@ -235,6 +300,7 @@ def game_loop():
     empty_heart = pygame.transform.scale(empty_heart, (30, 30))
 
     background = ScrollingBackground('Assets/background.png', 0.15)
+    survival_time = None
 
     explosion_frames = []
     for i in range(1, 26):
@@ -244,21 +310,24 @@ def game_loop():
         explosion_frames.append(scaled_img)    
     explosion_sprites = pygame.sprite.Group()
 
-    if show_start_screen(screen):
+    ser = serial.Serial('/dev/cu.usbmodem1103', 115200, timeout=0)
+    if show_start_screen(screen, ser):
+        start_time = datetime.now()
         pygame.event.clear()
         # Setup serial port
-        ser = serial.Serial('/dev/cu.usbmodem1103', 115200, timeout=0)
         send_UART_command("start", ser)
+        frame_counter = 0
         while running:
             # Calculate elapsed time to adjust wall speed dynamically
             current_time = datetime.now()
             elapsed_time = (current_time - start_time).total_seconds()
-            rounded_time = round(elapsed_time, 2)
+            survival_time = round(elapsed_time, 2)
             global WALL_SPEED
             WALL_SPEED = 10.0 + elapsed_time/10
             WALL_SPEED = min(WALL_SPEED, 20.0)
 
             clock.tick(FPS)  # Cap the game loop to the defined FPS
+            frame_counter += 1
 
             responwn_and_collect_coin(all_sprites, coins, player, ser)
 
@@ -283,6 +352,7 @@ def game_loop():
 
             # Read data from UART
             line = ser.readline().decode('utf-8')
+            log_line(line, frame_counter)
             if "roll and pitch," in line:
                 _, roll_str, pitch_str = line.split(',')
                 try:
@@ -318,7 +388,7 @@ def game_loop():
             screen.blit(text_surface, (10, 10))  # Draw at top-left
             
             # Display Survival Time
-            text_surface = font.render(f"Survival Time: {rounded_time}s", True, WHITE)
+            text_surface = font.render(f"Survival Time: {survival_time}s", True, WHITE)
             screen.blit(text_surface, (10, 35))  # Draw at top-left
 
             # Display Health as Hearts
@@ -335,6 +405,8 @@ def game_loop():
             pygame.display.flip()
 
         send_UART_command("stop", ser)
+        time.sleep(0.1)
+        send_UART_command(f"stat, {survival_time}, {COIN_COUNTER}", ser)
 
     pygame.quit()  # End the game
 
