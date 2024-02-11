@@ -1,7 +1,9 @@
 ## DEMO
 Demo play can be found here:
 
-[<img src="https://img.youtube.com/vi/qdVOFlyoiSk/maxresdefault.jpg" width="50%">](https://youtu.be/qdVOFlyoiSk)
+https://github.com/johnwangwyx/Dodge-The-Wall-pygame-with-STM32L4-/assets/78456315/c2cbe2b2-f547-4a0d-ada6-3bed026dd8c4
+
 
 It is quite fun, please check it out :)
+
 
