@@ -1,0 +1,12 @@
+../Drivers/Components/st7735/st7735.c:107:6:st7735_Init	1
+../Drivers/Components/st7735/st7735.c:220:6:st7735_DisplayOn	1
+../Drivers/Components/st7735/st7735.c:237:6:st7735_DisplayOff	1
+../Drivers/Components/st7735/st7735.c:255:6:st7735_SetCursor	1
+../Drivers/Components/st7735/st7735.c:278:6:st7735_WritePixel	3
+../Drivers/Components/st7735/st7735.c:302:6:st7735_WriteReg	1
+../Drivers/Components/st7735/st7735.c:316:6:st7735_SetDisplayWindow	1
+../Drivers/Components/st7735/st7735.c:349:6:st7735_DrawHLine	3
+../Drivers/Components/st7735/st7735.c:373:6:st7735_DrawVLine	3
+../Drivers/Components/st7735/st7735.c:389:10:st7735_GetLcdPixelWidth	1
+../Drivers/Components/st7735/st7735.c:399:10:st7735_GetLcdPixelHeight	1
+../Drivers/Components/st7735/st7735.c:409:6:st7735_DrawBitmap	1

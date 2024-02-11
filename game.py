@@ -17,7 +17,7 @@ pygame.init()
 
 # Game parameters
 WIDTH, HEIGHT = 800, 600  # Screen dimensions
-PLAYER_ACC = 60           # Acceleration for player movement
+PLAYER_ACC = 70           # Acceleration for player movement
 FRICTION = -0.5           # Friction affecting player movement (deceleration)
 FPS = 60                  # Frames per second (game refresh rate)
 WALL_SPEED = 15           # Speed at which walls move down the screen
@@ -30,7 +30,7 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 BACKGROUND_COLOR = (0, 0, 0)
 
-PLAYER_HEALTH = 3
+PLAYER_HEALTH = 2
 
 COIN_COUNTER = 0
 

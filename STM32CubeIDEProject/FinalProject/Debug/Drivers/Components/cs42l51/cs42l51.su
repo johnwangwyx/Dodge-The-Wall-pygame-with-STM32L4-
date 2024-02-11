@@ -1,0 +1,13 @@
+../Drivers/Components/cs42l51/cs42l51.c:126:10:cs42l51_Init	32	static
+../Drivers/Components/cs42l51/cs42l51.c:225:6:cs42l51_DeInit	8	static
+../Drivers/Components/cs42l51/cs42l51.c:238:10:cs42l51_ReadID	24	static
+../Drivers/Components/cs42l51/cs42l51.c:268:10:cs42l51_Play	24	static
+../Drivers/Components/cs42l51/cs42l51.c:315:10:cs42l51_Pause	24	static
+../Drivers/Components/cs42l51/cs42l51.c:331:10:cs42l51_Resume	24	static
+../Drivers/Components/cs42l51/cs42l51.c:347:10:cs42l51_Stop	24	static
+../Drivers/Components/cs42l51/cs42l51.c:375:10:cs42l51_SetVolume	24	static
+../Drivers/Components/cs42l51/cs42l51.c:394:10:cs42l51_SetFrequency	16	static
+../Drivers/Components/cs42l51/cs42l51.c:406:10:cs42l51_SetMute	24	static
+../Drivers/Components/cs42l51/cs42l51.c:436:10:cs42l51_SetOutputMode	16	static
+../Drivers/Components/cs42l51/cs42l51.c:446:10:cs42l51_Reset	16	static
+../Drivers/Components/cs42l51/cs42l51.c:474:16:CODEC_IO_Write	24	static

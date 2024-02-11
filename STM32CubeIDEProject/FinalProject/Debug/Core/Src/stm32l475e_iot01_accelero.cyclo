@@ -1,0 +1,4 @@
+../Core/Src/stm32l475e_iot01_accelero.c:48:24:BSP_ACCELERO_Init	2
+../Core/Src/stm32l475e_iot01_accelero.c:89:6:BSP_ACCELERO_DeInit	3
+../Core/Src/stm32l475e_iot01_accelero.c:106:6:BSP_ACCELERO_LowPower	3
+../Core/Src/stm32l475e_iot01_accelero.c:124:6:BSP_ACCELERO_AccGetXYZ	3

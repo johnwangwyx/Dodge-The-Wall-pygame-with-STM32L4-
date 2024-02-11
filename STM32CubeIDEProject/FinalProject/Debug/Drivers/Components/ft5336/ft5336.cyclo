@@ -1,0 +1,15 @@
+../Drivers/Components/ft5336/ft5336.c:129:6:ft5336_Init	1
+../Drivers/Components/ft5336/ft5336.c:145:6:ft5336_Reset	1
+../Drivers/Components/ft5336/ft5336.c:157:10:ft5336_ReadID	4
+../Drivers/Components/ft5336/ft5336.c:189:6:ft5336_TS_Start	1
+../Drivers/Components/ft5336/ft5336.c:206:9:ft5336_TS_DetectTouch	2
+../Drivers/Components/ft5336/ft5336.c:238:6:ft5336_TS_GetXY	12
+../Drivers/Components/ft5336/ft5336.c:359:6:ft5336_TS_EnableIT	1
+../Drivers/Components/ft5336/ft5336.c:374:6:ft5336_TS_DisableIT	1
+../Drivers/Components/ft5336/ft5336.c:391:9:ft5336_TS_ITStatus	1
+../Drivers/Components/ft5336/ft5336.c:404:6:ft5336_TS_ClearIT	1
+../Drivers/Components/ft5336/ft5336.c:419:6:ft5336_TS_GetGestureID	1
+../Drivers/Components/ft5336/ft5336.c:443:6:ft5336_TS_GetTouchInfo	12
+../Drivers/Components/ft5336/ft5336.c:552:16:ft5336_Get_I2C_InitializedStatus	1
+../Drivers/Components/ft5336/ft5336.c:562:13:ft5336_I2C_InitializeIfRequired	2
+../Drivers/Components/ft5336/ft5336.c:579:17:ft5336_TS_Configure	1

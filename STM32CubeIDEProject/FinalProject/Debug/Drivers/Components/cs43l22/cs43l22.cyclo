@@ -1,0 +1,13 @@
+../Drivers/Components/cs43l22/cs43l22.c:117:10:cs43l22_Init	6
+../Drivers/Components/cs43l22/cs43l22.c:201:6:cs43l22_DeInit	1
+../Drivers/Components/cs43l22/cs43l22.c:212:10:cs43l22_ReadID	1
+../Drivers/Components/cs43l22/cs43l22.c:230:10:cs43l22_Play	2
+../Drivers/Components/cs43l22/cs43l22.c:256:10:cs43l22_Pause	1
+../Drivers/Components/cs43l22/cs43l22.c:275:10:cs43l22_Resume	2
+../Drivers/Components/cs43l22/cs43l22.c:303:10:cs43l22_Stop	1
+../Drivers/Components/cs43l22/cs43l22.c:328:10:cs43l22_SetVolume	3
+../Drivers/Components/cs43l22/cs43l22.c:355:10:cs43l22_SetFrequency	1
+../Drivers/Components/cs43l22/cs43l22.c:367:10:cs43l22_SetMute	2
+../Drivers/Components/cs43l22/cs43l22.c:396:10:cs43l22_SetOutputMode	5
+../Drivers/Components/cs43l22/cs43l22.c:435:10:cs43l22_Reset	1
+../Drivers/Components/cs43l22/cs43l22.c:447:16:CODEC_IO_Write	1

@@ -1,0 +1,16 @@
+../Drivers/Components/ft3x67/ft3x67.c:115:6:ft3x67_Init	1
+../Drivers/Components/ft3x67/ft3x67.c:127:6:ft3x67_Reset	1
+../Drivers/Components/ft3x67/ft3x67.c:139:10:ft3x67_ReadID	1
+../Drivers/Components/ft3x67/ft3x67.c:153:6:ft3x67_TS_Start	1
+../Drivers/Components/ft3x67/ft3x67.c:170:9:ft3x67_TS_DetectTouch	2
+../Drivers/Components/ft3x67/ft3x67.c:202:6:ft3x67_TS_GetXY	4
+../Drivers/Components/ft3x67/ft3x67.c:243:6:ft3x67_TS_EnableIT	1
+../Drivers/Components/ft3x67/ft3x67.c:255:6:ft3x67_TS_DisableIT	1
+../Drivers/Components/ft3x67/ft3x67.c:269:9:ft3x67_TS_ITStatus	1
+../Drivers/Components/ft3x67/ft3x67.c:282:6:ft3x67_TS_ClearIT	1
+../Drivers/Components/ft3x67/ft3x67.c:294:6:ft3x67_TS_GestureConfig	2
+../Drivers/Components/ft3x67/ft3x67.c:316:6:ft3x67_TS_GetGestureID	1
+../Drivers/Components/ft3x67/ft3x67.c:340:6:ft3x67_TS_GetTouchInfo	4
+../Drivers/Components/ft3x67/ft3x67.c:389:16:ft3x67_Get_I2C_InitializedStatus	1
+../Drivers/Components/ft3x67/ft3x67.c:399:13:ft3x67_I2C_InitializeIfRequired	2
+../Drivers/Components/ft3x67/ft3x67.c:416:17:ft3x67_TS_Configure	1

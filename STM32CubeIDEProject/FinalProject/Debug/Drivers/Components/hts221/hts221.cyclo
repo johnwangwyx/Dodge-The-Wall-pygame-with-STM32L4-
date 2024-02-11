@@ -1,0 +1,5 @@
+../Drivers/Components/hts221/hts221.c:65:6:HTS221_H_Init	1
+../Drivers/Components/hts221/hts221.c:91:9:HTS221_H_ReadID	1
+../Drivers/Components/hts221/hts221.c:108:7:HTS221_H_ReadHumidity	3
+../Drivers/Components/hts221/hts221.c:157:6:HTS221_T_Init	1
+../Drivers/Components/hts221/hts221.c:184:7:HTS221_T_ReadTemp	1

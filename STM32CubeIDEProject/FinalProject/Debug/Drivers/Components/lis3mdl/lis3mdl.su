@@ -1,0 +1,5 @@
+../Drivers/Components/lis3mdl/lis3mdl.c:68:6:LIS3MDL_MagInit	16	static
+../Drivers/Components/lis3mdl/lis3mdl.c:80:6:LIS3MDL_MagDeInit	16	static
+../Drivers/Components/lis3mdl/lis3mdl.c:101:9:LIS3MDL_MagReadID	8	static
+../Drivers/Components/lis3mdl/lis3mdl.c:113:6:LIS3MDL_MagLowPower	24	static
+../Drivers/Components/lis3mdl/lis3mdl.c:140:6:LIS3MDL_MagReadXYZ	40	static

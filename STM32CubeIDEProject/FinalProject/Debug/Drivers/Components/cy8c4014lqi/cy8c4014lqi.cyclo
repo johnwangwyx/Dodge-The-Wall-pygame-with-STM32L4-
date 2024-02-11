@@ -1,0 +1,15 @@
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:132:6:cy8c4014lqi_Init	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:144:6:cy8c4014lqi_Reset	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:156:10:cy8c4014lqi_ReadID	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:170:6:cy8c4014lqi_TS_Start	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:183:9:cy8c4014lqi_TS_DetectTouch	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:197:6:cy8c4014lqi_TS_GetXY	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:210:6:cy8c4014lqi_TS_EnableIT	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:222:6:cy8c4014lqi_TS_DisableIT	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:236:9:cy8c4014lqi_TS_ITStatus	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:249:6:cy8c4014lqi_TS_ClearIT	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:262:6:cy8c4014lqi_TS_GestureConfig	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:274:6:cy8c4014lqi_TS_GetGestureID	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:295:6:cy8c4014lqi_TS_GetTouchInfo	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:320:16:cy8c4014lqi_Get_I2C_InitializedStatus	1
+../Drivers/Components/cy8c4014lqi/cy8c4014lqi.c:330:13:cy8c4014lqi_I2C_InitializeIfRequired	2

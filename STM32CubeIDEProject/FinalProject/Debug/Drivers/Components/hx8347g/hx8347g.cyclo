@@ -1,0 +1,15 @@
+../Drivers/Components/hx8347g/hx8347g.c:105:6:hx8347g_Init	2
+../Drivers/Components/hx8347g/hx8347g.c:185:6:hx8347g_DisplayOn	1
+../Drivers/Components/hx8347g/hx8347g.c:209:6:hx8347g_DisplayOff	1
+../Drivers/Components/hx8347g/hx8347g.c:230:10:hx8347g_GetLcdPixelWidth	1
+../Drivers/Components/hx8347g/hx8347g.c:240:10:hx8347g_GetLcdPixelHeight	1
+../Drivers/Components/hx8347g/hx8347g.c:250:10:hx8347g_ReadID	2
+../Drivers/Components/hx8347g/hx8347g.c:268:6:hx8347g_SetCursor	1
+../Drivers/Components/hx8347g/hx8347g.c:283:6:hx8347g_WritePixel	1
+../Drivers/Components/hx8347g/hx8347g.c:300:10:hx8347g_ReadPixel	1
+../Drivers/Components/hx8347g/hx8347g.c:318:6:hx8347g_WriteReg	1
+../Drivers/Components/hx8347g/hx8347g.c:331:10:hx8347g_ReadReg	1
+../Drivers/Components/hx8347g/hx8347g.c:348:6:hx8347g_SetDisplayWindow	1
+../Drivers/Components/hx8347g/hx8347g.c:375:6:hx8347g_DrawHLine	2
+../Drivers/Components/hx8347g/hx8347g.c:402:6:hx8347g_DrawVLine	2
+../Drivers/Components/hx8347g/hx8347g.c:427:6:hx8347g_DrawBitmap	1

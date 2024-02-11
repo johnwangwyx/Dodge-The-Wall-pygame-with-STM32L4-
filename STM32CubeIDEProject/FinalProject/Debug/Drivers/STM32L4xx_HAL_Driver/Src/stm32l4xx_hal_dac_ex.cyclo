@@ -1,0 +1,14 @@
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:119:19:HAL_DACEx_TriangleWaveGenerate	2
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:168:19:HAL_DACEx_NoiseWaveGenerate	2
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:213:19:HAL_DACEx_DualSetValue	2
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:249:13:HAL_DACEx_ConvCpltCallbackCh2	1
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:265:13:HAL_DACEx_ConvHalfCpltCallbackCh2	1
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:281:13:HAL_DACEx_ErrorCallbackCh2	1
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:297:13:HAL_DACEx_DMAUnderrunCallbackCh2	1
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:325:19:HAL_DACEx_SelfCalibrate	8
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:464:19:HAL_DACEx_SetUserTrimming	3
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:507:10:HAL_DACEx_GetTrimOffset	1
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:545:10:HAL_DACEx_DualGetValue	1
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:587:6:DAC_DMAConvCpltCh2	1
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:606:6:DAC_DMAHalfConvCpltCh2	1
+../Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac_ex.c:623:6:DAC_DMAErrorCh2	1
